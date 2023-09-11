@@ -1,0 +1,16 @@
+{
+  "name": "46-1st-team6-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "initialize.js",
+  "scripts": {
+    "start": "app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2"
+  }
+}
