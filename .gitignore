@@ -232,6 +232,6 @@ tags
 
 // 절대경로 schema.sql root directory 
 
-./schema.sql 
+db/schema.sql 
 
 # End of https://www.toptal.com/developers/gitignore/api/vim,macos,node,linux,visualstudiocode,dotenvnp

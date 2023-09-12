@@ -4,9 +4,8 @@ const http = require("http");
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-//const userService = require("./services/userService.js");
 
-const myDataSource = new DataSource({
+const myDataSource = new AppDataSource({
   type: process.env.DB_CONNECTION,
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
