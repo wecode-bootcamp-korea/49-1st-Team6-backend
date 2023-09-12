@@ -128,3 +128,9 @@ const getUsers = async (req, res) => {
     });
   }
 };
+
+module.exprots = {
+  signUp: signUp,
+  logIn: logIn,
+  getUsers: getUsers,
+};
