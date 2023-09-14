@@ -158,12 +158,12 @@ const login = async (req, res) => {
             throw error
         }
 
-        const loginToken = jwt.sign({ id: inComeEmailPassword[0].id }, "login token")
+        const loginToken = jwt.sign({ id: inComeEmailPassword[0].id }, "token")
         const passwordMatch = await bcrypt.compare(password, inComeEmailPassword[0].password)
 
         if (passwordMatch) {
             return res.status(200).json({
-                token: loginToken,
+                accessToken: loginToken,
                 'message': '로그인 성공'
             })
 
@@ -261,14 +261,14 @@ const uploadThread = async (req, res) => {
         return res.status(500).json({ 'message': '서버오류 ' })
     }
 }
-
 // 게시물확인
 const showThread = async (req, res) => {
     try {
         const threads = await myDataSource.query(`
-        SELECT threads.id, threads.title, threads.content, threads.updated_at, threads.created_at, users.nickname 
-        FROM threads
-        JOIN users ON threads.user_id = users.id
+        SELECT threads.id, threads.title, threads.content,
+         threads.updated_at, threads.created_at, users.nickname 
+        FROM users
+        LEFT JOIN threads ON users.id = threads.user_id
         `)
         return res.status(200).json({
             "threads": threads
@@ -280,6 +280,10 @@ const showThread = async (req, res) => {
             "message": error.message
         })
     }
+}
+// 게시물수정
+const updateThread = async (req, res) => {
+
 }
 myDataSource.initialize()
     .then(() => {

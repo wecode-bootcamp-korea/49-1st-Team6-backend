@@ -1,9 +1,9 @@
 const http = require('http')
 const express = require('express')
-
+const cors = require('cors')
 const app = express()
 app.use(express.json())
-
+app.use(cors())
 const services = require('./service/service')
 
 // 서버 확인
@@ -36,7 +36,8 @@ const server = http.createServer(app)
 
 const start = () => {
     try {
-        server.listen(8000, () => console.log(`Server is listening on 8000`))
+        const PORT = 8000
+        server.listen(PORT, () => console.log(`Server is listening on ${PORT}`))
     } catch (err) {
         console.error(err)
     }
