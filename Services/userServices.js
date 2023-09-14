@@ -1,4 +1,23 @@
-const signUp = async (req, res) => {
+const { DataSource } = require("typeorm");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");  
+
+require("dotenv").config();
+
+const myDataSource = new AppDataSource({
+  type: process.env.DB_CONNECTION,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+});
+
+myDataSource.initialize().then(() => {
+  console.log("Data Source has been initialized_userServices!");
+});
+
+const readThreads = async (req, res) => {
   try {
     const me = req.body;
     console.log(me);
@@ -84,7 +103,7 @@ const logIn = async (req, res) => {
     console.log("existing user:", existingUser);
 
     if (existingUser.length === 0) {
-      const error = new Error("DUPLICATED_EMAIL_ADDRESS");
+      const error = new Error("EMAIL_Unexist");
       error.statusCode = 400;
       throw error;
     }
@@ -94,22 +113,35 @@ const logIn = async (req, res) => {
 
     console.log(password);
 
-    if (password !== existingUser[0].password) {
-      const error = new Error("INVALID_PASSWORD");
-      error.statusCode = 400;
-      throw error;
+    //if (password !== existingUser[0].password) {
+    //  const error = new Error("INVALID_PASSWORD");
+    //  error.statusCode = 400;
+    //  throw error;
+    // }
+
+    // 해쉬화 (bcypt아직.. 코드만..)
+    const hashPw = await bcrypt.compare(password, existingUser[0].password);
+
+    if(!hashPw){
+        const error = new Error("passwordError")
+        error.statusCode = 400
+        error.code = "passwordError"
+        throw error
     }
 
-    const token = jwt.sign({ id: existingUser[0].id }, "rekey");
+    const token = jwt.sign({ id: existingUser[0].id }, process.env.TYPEORM_JWT);  //signature .... 
     return res.status(200).json({
       message: "LOGIN_SUCCESS",
       accessToken: token,
     });
   } catch (error) {
     console.log(error);
+    //return res.status(400).json(error) 이거 넣어야 하나요? 
   }
 };
 
+
+// 이 부분 필요 없나요?
 const getUsers = async (req, res) => {
   try {
     const userData = await myDataSource.query(

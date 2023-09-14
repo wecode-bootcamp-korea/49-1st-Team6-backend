@@ -1,23 +1,20 @@
-require("dotenv").config();
-
 const http = require("http");
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-
-const myDataSource = new AppDataSource({
-  type: process.env.DB_CONNECTION,
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-});
+const userServices = require('./Services/userServices.js') //추가 
+const threadServices = require('./Services/postServices.js') //추가 
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+app.post("/users/signup", userServices.signUp);
+app.post("/users/login", userServices.logIn);
+app.get("/", userServices.getUsers);
+app.get("/posts/read", userServices.readThreads); //게시글 조회 
+app.post("/posts/create", userServices.createThreads);
 
 app.get("/", async (req, res) => {
   try {
@@ -31,14 +28,11 @@ const server = http.createServer(app);
 
 const start = async () => {
   try {
-    server.listen(portNumber, () => console.log(`Server is listening on 8000`));
+    server.listen(portNumber, () => console.log(`Server is listening on 8000`));  // 이부분 + .env + .env.sample -> port 변수화 모르겠.. 
   } catch (err) {
     console.error(err);
   }
 };
 
-myDataSource.initialize().then(() => {
-  console.log("Data Source has been initialized!");
-});
 
 start();
