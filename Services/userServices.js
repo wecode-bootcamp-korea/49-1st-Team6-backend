@@ -1,11 +1,11 @@
 const { DataSource } = require("typeorm");
-const AppDataSource = require("./AppDataSource");
+
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 require("dotenv").config();
 
-const myDataSource = new AppDataSource({
+const myDataSource = new DataSource({
   type: process.env.DB_CONNECTION,
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
@@ -18,7 +18,7 @@ myDataSource.initialize().then(() => {
   console.log("Data Source has been initialized_userServices!");
 });
 
-const readThreads = async (req, res) => {
+const signUp = async (req, res) => {
   try {
     const me = req.body;
     console.log(me);
@@ -61,6 +61,11 @@ const readThreads = async (req, res) => {
       throw error;
     }
 
+
+    const saltRounds = 10;
+    const hashedPw = await bcrypt.hash(password, saltRounds);
+
+
     const userData = await myDataSource.query(`
         INSERT INTO users (                    
         password,
@@ -68,13 +73,14 @@ const readThreads = async (req, res) => {
         nickname
         )
         VALUES (
+        '${hashedPw}', 
+        '${email}',
         '${nickname}'
-        '${password}', 
-        '${email}'
         )
     `);
 
     console.log("after insert into", userData);
+
 
     return res.status(201).json({
       message: "userCreated",
@@ -121,6 +127,7 @@ const logIn = async (req, res) => {
     // }
 
     const hashPw = await bcrypt.compare(password, existingUser[0].password);
+console.log(hashPw)
 
     if (!hashPw) {
       const error = new Error("passwordError");
@@ -129,7 +136,7 @@ const logIn = async (req, res) => {
       throw error;
     }
 
-    const token = jwt.sign({ id: existingUser[0].id }, process.env.TYPEORM_JWT); 
+    const token = jwt.sign({ id: existingUser[0].id }, process.env.TYPEORM_JWT);
     return res.status(200).json({
       message: "LOGIN_SUCCESS",
       accessToken: token,
@@ -139,7 +146,6 @@ const logIn = async (req, res) => {
     return res.status(400).json(error);
   }
 };
-
 
 const getUsers = async (req, res) => {
   try {
@@ -160,8 +166,8 @@ const getUsers = async (req, res) => {
   }
 };
 
-module.exprots = {
-  signUp: signUp,
-  logIn: logIn,
-  getUsers: getUsers,
+module.exports = {
+  signUp,
+  logIn,
+  getUsers,
 };
