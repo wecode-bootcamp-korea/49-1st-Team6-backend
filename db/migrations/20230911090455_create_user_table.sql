@@ -12,4 +12,3 @@ CREATE TABLE users (
 );
 
 -- migrate:down
-
