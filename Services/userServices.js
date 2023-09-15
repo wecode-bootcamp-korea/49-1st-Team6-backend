@@ -1,6 +1,7 @@
 const { DataSource } = require("typeorm");
+const AppDataSource = require("./AppDataSource");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");  
+const bcrypt = require("bcrypt");
 
 require("dotenv").config();
 
@@ -119,29 +120,27 @@ const logIn = async (req, res) => {
     //  throw error;
     // }
 
-    // 해쉬화 (bcypt아직.. 코드만..)
     const hashPw = await bcrypt.compare(password, existingUser[0].password);
 
-    if(!hashPw){
-        const error = new Error("passwordError")
-        error.statusCode = 400
-        error.code = "passwordError"
-        throw error
+    if (!hashPw) {
+      const error = new Error("passwordError");
+      error.statusCode = 400;
+      error.code = "passwordError";
+      throw error;
     }
 
-    const token = jwt.sign({ id: existingUser[0].id }, process.env.TYPEORM_JWT);  //signature .... 
+    const token = jwt.sign({ id: existingUser[0].id }, process.env.TYPEORM_JWT); 
     return res.status(200).json({
       message: "LOGIN_SUCCESS",
       accessToken: token,
     });
   } catch (error) {
     console.log(error);
-    //return res.status(400).json(error) 이거 넣어야 하나요? 
+    return res.status(400).json(error);
   }
 };
 
 
-// 이 부분 필요 없나요?
 const getUsers = async (req, res) => {
   try {
     const userData = await myDataSource.query(

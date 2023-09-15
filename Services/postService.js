@@ -1,4 +1,6 @@
 const { DataSource } = require('typeorm')
+const AppDataSource = require('./AppDataSource');
+
 const jwt = require('jsonwebtoken')
 
 require("dotenv").config();
@@ -29,7 +31,7 @@ const readThreads = async (req, res) => {
         FROM threads
         INNER JOIN users ON threads.user_id = users.id
         ORDER BY threads.created_at DESC;
-        `)  // threads.id AS postId,threads.created_at AS createdAt ? / title은 안 가져와? 
+        `)  
 
         console.log("success");
         return res.status(200).json({
@@ -70,7 +72,7 @@ const createThreads = async(req, res) => {
             '${id}',
             '${content}'   
         );
-        `) //title, created date 은? 
+        `) 
 
         console.log("new Post ID : ", newPost.id)
         console.log("new Post Content : ", newPost.content)
